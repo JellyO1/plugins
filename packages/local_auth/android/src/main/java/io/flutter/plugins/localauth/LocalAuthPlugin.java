@@ -151,7 +151,30 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
                 new AuthenticationHelper(
                         lifecycle,
                         (FragmentActivity) activity,
-                        call);
+                        call,
+                        new AuthCompletionHandler() {
+                          @Override
+                          public void onSuccess() {
+                            if (authInProgress.compareAndSet(true, false)) {
+                              result.success(true);
+                            }
+                          }
+
+                          @Override
+                          public void onFailure() {
+                            if (authInProgress.compareAndSet(true, false)) {
+                              result.success(false);
+                            }
+                          }
+
+                          @Override
+                          public void onError(String code, String error) {
+                            if (authInProgress.compareAndSet(true, false)) {
+                              result.error(code, error, null);
+                            }
+                          }
+                        }
+                        );
       }
 
       result.success(authenticationHelper.canAuthenticate());
