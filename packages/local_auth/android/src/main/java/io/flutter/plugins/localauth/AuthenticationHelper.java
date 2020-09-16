@@ -69,7 +69,6 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   private final BiometricPrompt.PromptInfo promptInfo;
   private final boolean isAuthSticky;
   private final UiThreadExecutor uiThreadExecutor;
-  private final BiometricManager biometricManager;
   private boolean activityPaused = false;
   private BiometricPrompt biometricPrompt;
 
@@ -93,10 +92,6 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
             .setNegativeButtonText((String) call.argument("cancelButton"))
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
             .build();
-  }
-
-  int canAuthenticate() {
-    return biometricManager.canAuthenticate();
   }
 
   /** Start the fingerprint listener. */

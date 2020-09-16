@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
+import androidx.biometric.BiometricManager;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -34,6 +35,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   private Activity activity;
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
   private AuthenticationHelper authenticationHelper;
+  private BiometricManager biometricManager;
 
   // These are null when not using v2 embedding.
   private MethodChannel channel;
@@ -146,43 +148,22 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     } else if (call.method.equals(("stopAuthentication"))) {
       stopAuthentication(result);
     } else if (call.method.equals(("canAuthenticate"))) {
-      if(authenticationHelper == null) {
-        authenticationHelper =
-                new AuthenticationHelper(
-                        lifecycle,
-                        (FragmentActivity) activity,
-                        call,
-                        new AuthCompletionHandler() {
-                          @Override
-                          public void onSuccess() {
-                            if (authInProgress.compareAndSet(true, false)) {
-                              result.success(true);
-                            }
-                          }
-
-                          @Override
-                          public void onFailure() {
-                            if (authInProgress.compareAndSet(true, false)) {
-                              result.success(false);
-                            }
-                          }
-
-                          @Override
-                          public void onError(String code, String error) {
-                            if (authInProgress.compareAndSet(true, false)) {
-                              result.error(code, error, null);
-                            }
-                          }
-                        }
-                        );
+      if (activity == null || activity.isFinishing()) {
+        result.error("no_activity", "local_auth plugin requires a foreground activity", null);
+        return;
       }
 
-      result.success(authenticationHelper.canAuthenticate());
+      biometricManager = BiometricManager.from(activity);
+
+      result.success(canAuthenticate());
     } else {
       result.notImplemented();
     }
   }
 
+  int canAuthenticate() {
+    return biometricManager.canAuthenticate();
+  }
   /*
    Stops the authentication if in progress.
   */
