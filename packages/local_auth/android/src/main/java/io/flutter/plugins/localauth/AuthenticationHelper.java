@@ -19,6 +19,7 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+import androidx.biometric.BiometricManager;
 import androidx.annotation.NonNull;
 import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.FragmentActivity;
@@ -68,6 +69,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
   private final BiometricPrompt.PromptInfo promptInfo;
   private final boolean isAuthSticky;
   private final UiThreadExecutor uiThreadExecutor;
+  private final BiometricManager biometricManager;
   private boolean activityPaused = false;
   private BiometricPrompt biometricPrompt;
 
@@ -76,6 +78,7 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
       FragmentActivity activity,
       MethodCall call,
       AuthCompletionHandler completionHandler) {
+    this.biometricManager = BiometricManager.from(activity);
     this.lifecycle = lifecycle;
     this.activity = activity;
     this.completionHandler = completionHandler;
@@ -90,6 +93,10 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
             .setNegativeButtonText((String) call.argument("cancelButton"))
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
             .build();
+  }
+
+  int canAuthenticate() {
+    return biometricManager.canAuthenticate();
   }
 
   /** Start the fingerprint listener. */
