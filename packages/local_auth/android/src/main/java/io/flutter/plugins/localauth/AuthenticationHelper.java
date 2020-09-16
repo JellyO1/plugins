@@ -77,7 +77,6 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
       FragmentActivity activity,
       MethodCall call,
       AuthCompletionHandler completionHandler) {
-    this.biometricManager = BiometricManager.from(activity);
     this.lifecycle = lifecycle;
     this.activity = activity;
     this.completionHandler = completionHandler;
