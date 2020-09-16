@@ -146,6 +146,14 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     } else if (call.method.equals(("stopAuthentication"))) {
       stopAuthentication(result);
     } else if (call.method.equals(("canAuthenticate"))) {
+      if(authenticationHelper == null) {
+        authenticationHelper =
+                new AuthenticationHelper(
+                        lifecycle,
+                        (FragmentActivity) activity,
+                        call);
+      }
+
       result.success(authenticationHelper.canAuthenticate());
     } else {
       result.notImplemented();
