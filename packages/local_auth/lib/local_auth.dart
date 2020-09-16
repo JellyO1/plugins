@@ -108,16 +108,7 @@ class LocalAuthentication {
     return Future<bool>.sync(() => true);
   }
 
-  Future<int> canAuthenticate() {
-    if(_platform.isAndroid) {
-      return _channel.invokeMethod<int>('canAuthenticate');
-    }
-
-    throw PlatformException(
-      code: otherOperatingSystem,
-      message: 'iOS isn\'t supported'
-    );
-  }
+  Future<int> canAuthenticate() async => await _channel.invokeMethod<int>('canAuthenticate');
 
   /// Returns true if device is capable of checking biometrics
   ///
