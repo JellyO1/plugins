@@ -74,9 +74,9 @@
   NSError *authError = nil;
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:&authError]) {
-    result(0);
+    result(@0);
   } else if(authError.code == LAErrorTouchIDNotEnrolled) {
-    result(11);
+    result(@11);
   }
 }
 
